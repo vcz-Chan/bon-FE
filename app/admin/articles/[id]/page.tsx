@@ -17,12 +17,16 @@ export default function ArticleEditPage({ params }: { params: Promise<{ id: stri
     const [saving, setSaving] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
 
+    // Get category from URL params
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const categoryParam = urlParams?.get('category');
+
     // Form State
     const [formData, setFormData] = useState<Partial<Article>>({
         title: "",
         content: "",
         summary: "",
-        category_id: 1,
+        category_id: categoryParam ? Number(categoryParam) : 1,
         priority: 0,
         requires_sm: false,
         is_published: true
@@ -99,6 +103,30 @@ export default function ArticleEditPage({ params }: { params: Promise<{ id: stri
         }
     };
 
+    const handleDelete = async () => {
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+
+        try {
+            const auth = JSON.parse(sessionStorage.getItem("bon_auth") || "{}")
+            const res = await fetch(`/api/admin/articles/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "X-Admin-Password": auth.password || ""
+                }
+            });
+
+            const json = await res.json();
+            if (json.ok) {
+                alert("삭제되었습니다.");
+                router.push("/admin/articles");
+            } else {
+                alert(json.message || "삭제 실패");
+            }
+        } catch (e) {
+            alert("오류가 발생했습니다.");
+        }
+    };
+
     if (loading) return <div className="p-8 text-center">로딩 중...</div>;
 
     return (
@@ -115,7 +143,7 @@ export default function ArticleEditPage({ params }: { params: Promise<{ id: stri
                     </div>
                     <div className="flex gap-1 md:gap-2">
                         {!isNew && (
-                            <Button variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-50 text-xs md:text-sm px-2 md:px-4">
+                            <Button variant="ghost" onClick={handleDelete} className="text-red-500 hover:text-red-600 hover:bg-red-50 text-xs md:text-sm px-2 md:px-4">
                                 <Trash2 className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">삭제</span>
                             </Button>
                         )}

@@ -60,6 +60,30 @@ function ArticleListContent() {
 
     const filteredArticles = articles.filter(a => a.title.includes(search))
 
+    const handleDelete = async (articleId: number) => {
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+
+        try {
+            const auth = JSON.parse(sessionStorage.getItem("bon_auth") || "{}")
+            const res = await fetch(`/api/admin/articles/${articleId}`, {
+                method: "DELETE",
+                headers: {
+                    "X-Admin-Password": auth.password || ""
+                }
+            });
+
+            const json = await res.json();
+            if (json.ok) {
+                alert("삭제되었습니다.");
+                fetchArticles(); // Refresh the list
+            } else {
+                alert(json.message || "삭제 실패");
+            }
+        } catch (e) {
+            alert("오류가 발생했습니다.");
+        }
+    }
+
     return (
         <div className="min-h-screen p-4 md:p-8">
             <div className="max-w-7xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-xl min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col">
@@ -73,7 +97,12 @@ function ArticleListContent() {
                     <Button
                         variant="gradient"
                         className="gap-2"
-                        onClick={() => router.push('/admin/articles/new')}
+                        onClick={() => {
+                            const url = selectedCategory
+                                ? `/admin/articles/new?category=${selectedCategory}`
+                                : '/admin/articles/new';
+                            router.push(url);
+                        }}
                     >
                         <Plus className="w-4 h-4" /> 문서 등록
                     </Button>
@@ -151,7 +180,10 @@ function ArticleListContent() {
                                                         >
                                                             <Edit className="w-4 h-4" />
                                                         </button>
-                                                        <button className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors">
+                                                        <button
+                                                            className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors"
+                                                            onClick={() => handleDelete(article.id)}
+                                                        >
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     </div>
