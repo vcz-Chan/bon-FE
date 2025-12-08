@@ -158,14 +158,16 @@ function ArticleListContent() {
                                         const catParams = categories.find(c => c.id === String(article.category_id));
                                         return (
                                             <tr key={article.id} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-4 py-3 md:px-6 md:py-4 text-slate-500">#{article.id}</td>
-                                                <td className="px-4 py-3 md:px-6 md:py-4">
+                                                <td className="px-4 py-3 md:px-6 md:py-4 text-slate-500 align-middle">#{article.id}</td>
+                                                <td className="px-4 py-3 md:px-6 md:py-4 align-middle">
                                                     <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs whitespace-nowrap">
                                                         {catParams?.name || 'Unknown'}
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900 line-clamp-1">{article.title}</td>
-                                                <td className="px-4 py-3 md:px-6 md:py-4">
+                                                <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900 align-middle">
+                                                    <div className="line-clamp-1">{article.title}</div>
+                                                </td>
+                                                <td className="px-4 py-3 md:px-6 md:py-4 align-middle">
                                                     {article.is_published ? (
                                                         <span className="text-green-600 flex items-center gap-1 text-xs font-semibold whitespace-nowrap">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> 게시중
@@ -174,7 +176,7 @@ function ArticleListContent() {
                                                         <span className="text-slate-400 text-xs whitespace-nowrap">비공개</span>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-3 md:px-6 md:py-4 text-right">
+                                                <td className="px-4 py-3 md:px-6 md:py-4 text-right align-middle">
                                                     <div className="flex justify-end gap-2">
                                                         <button
                                                             className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
