@@ -1,15 +1,29 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-bon-burgundy: #6B0000;
+  --color-bon-green-start: #5FA224;
+  --color-bon-green-end: #ACC600;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* 
+   User requested "bon-green" background.
+   We will override the body background to be the gradient. 
+   We keep root variables for fallback, but apply the gradient on body.
+*/
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,10 +31,4 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

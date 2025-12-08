@@ -1,0 +1,178 @@
+"use client"
+
+import { useEffect, useState, Suspense } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Plus, Search, ArrowLeft, Edit, Trash2 } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Article, Category } from "@/types"
+
+function ArticleListContent() {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const categoryIdParam = searchParams.get('category')
+
+    const [articles, setArticles] = useState<Article[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
+    const [loading, setLoading] = useState(true)
+    const [search, setSearch] = useState("")
+    const [selectedCategory, setSelectedCategory] = useState(categoryIdParam || "")
+
+    useEffect(() => {
+        // Check Auth
+        const auth = sessionStorage.getItem("bon_auth")
+        if (!auth) router.replace("/")
+
+        fetchCategories()
+        fetchArticles()
+    }, [selectedCategory]) // Re-fetch when category filter changes
+
+    const fetchCategories = async () => {
+        try {
+            const auth = JSON.parse(sessionStorage.getItem("bon_auth") || "{}")
+            const res = await fetch("/api/admin/categories", {
+                headers: { "X-Admin-Password": auth.password || "" }
+            })
+            const json = await res.json()
+            if (json.ok) setCategories(json.data)
+        } catch (e) { }
+    }
+
+    const fetchArticles = async () => {
+        setLoading(true)
+        try {
+            const auth = JSON.parse(sessionStorage.getItem("bon_auth") || "{}")
+            let url = "/api/admin/articles"
+            if (selectedCategory) url += `?category_id=${selectedCategory}`
+
+            const res = await fetch(url, {
+                headers: { "X-Admin-Password": auth.password || "" }
+            })
+            const json = await res.json()
+            if (json.ok) setArticles(json.data)
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const filteredArticles = articles.filter(a => a.title.includes(search))
+
+    return (
+        <div className="min-h-screen p-4 md:p-8">
+            <div className="max-w-7xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-xl min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col">
+                <header className="bg-white/50 border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md">
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="icon" onClick={() => router.push('/admin')}>
+                            <ArrowLeft className="w-5 h-5 text-slate-500" />
+                        </Button>
+                        <h1 className="text-xl font-bold text-slate-900">문서 관리</h1>
+                    </div>
+                    <Button
+                        variant="gradient"
+                        className="gap-2"
+                        onClick={() => router.push('/admin/articles/new')}
+                    >
+                        <Plus className="w-4 h-4" /> 문서 등록
+                    </Button>
+                </header>
+
+                <main className="flex-1 px-6 py-8 space-y-6">
+                    {/* Filters */}
+                    <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        <div className="flex-1 max-w-xs">
+                            <select
+                                className="w-full h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-bon-green-start outline-none"
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                            >
+                                <option value="">전체 카테고리</option>
+                                {categories.map(c => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex-1 relative">
+                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="문서 제목 검색..."
+                                className="pl-9"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Table */}
+                    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left min-w-[600px]">
+                                <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-4 py-3 md:px-6 w-16 md:w-20">ID</th>
+                                        <th className="px-4 py-3 md:px-6 w-24 md:w-32">카테고리</th>
+                                        <th className="px-4 py-3 md:px-6">제목</th>
+                                        <th className="px-4 py-3 md:px-6 w-24 md:w-32">상태</th>
+                                        <th className="px-4 py-3 md:px-6 w-24 md:w-32 text-right">관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {loading ? (
+                                        <tr><td colSpan={5} className="px-4 py-8 md:px-6 text-center text-slate-500">로딩 중...</td></tr>
+                                    ) : filteredArticles.length === 0 ? (
+                                        <tr><td colSpan={5} className="px-4 py-8 md:px-6 text-center text-slate-500">문서가 없습니다.</td></tr>
+                                    ) : filteredArticles.map((article) => {
+                                        const catParams = categories.find(c => c.id === article.category_id);
+                                        return (
+                                            <tr key={article.id} className="hover:bg-slate-50/50 transition-colors">
+                                                <td className="px-4 py-3 md:px-6 md:py-4 text-slate-500">#{article.id}</td>
+                                                <td className="px-4 py-3 md:px-6 md:py-4">
+                                                    <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs whitespace-nowrap">
+                                                        {catParams?.name || 'Unknown'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900 line-clamp-1">{article.title}</td>
+                                                <td className="px-4 py-3 md:px-6 md:py-4">
+                                                    {article.is_published ? (
+                                                        <span className="text-green-600 flex items-center gap-1 text-xs font-semibold whitespace-nowrap">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> 게시중
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-slate-400 text-xs whitespace-nowrap">비공개</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 py-3 md:px-6 md:py-4 text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
+                                                            onClick={() => router.push(`/admin/articles/${article.id}`)}
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        <button className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-red-600 transition-colors">
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    )
+}
+
+export default function ArticleListPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ArticleListContent />
+        </Suspense>
+    )
+}
