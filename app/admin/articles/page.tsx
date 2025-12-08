@@ -7,11 +7,13 @@ import { Plus, Search, ArrowLeft, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Article, Category } from "@/types"
+import { useToast } from "@/components/ui/toast"
 
 function ArticleListContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const categoryIdParam = searchParams.get('category')
+    const { showToast } = useToast()
 
     const [articles, setArticles] = useState<Article[]>([])
     const [categories, setCategories] = useState<Category[]>([])
@@ -74,13 +76,13 @@ function ArticleListContent() {
 
             const json = await res.json();
             if (json.ok) {
-                alert("삭제되었습니다.");
+                showToast("삭제되었습니다.", "success");
                 fetchArticles(); // Refresh the list
             } else {
-                alert(json.message || "삭제 실패");
+                showToast(json.message || "삭제 실패", "error");
             }
         } catch (e) {
-            alert("오류가 발생했습니다.");
+            showToast("오류가 발생했습니다.", "error");
         }
     }
 

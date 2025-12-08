@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { UserRole } from "@/types"
+import { useToast } from "@/components/ui/toast"
 
 interface PasswordModalProps {
     isOpen: boolean
@@ -16,15 +17,14 @@ interface PasswordModalProps {
 export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState("")
     const router = useRouter()
+    const { showToast } = useToast()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!role || !password) return
 
         setIsLoading(true)
-        setError("")
 
         try {
             const res = await fetch("/api/auth/verify", {
@@ -36,12 +36,17 @@ export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
             const data = await res.json()
 
             if (!res.ok || !data.ok) {
-                throw new Error(data.message || "인증에 실패했습니다.")
+                const errorMsg = data.message || "인증에 실패했습니다."
+                showToast(errorMsg, "error")
+                throw new Error(errorMsg)
             }
 
             // Save to sessionStorage
             // Storing role and password to use in headers later
             sessionStorage.setItem("bon_auth", JSON.stringify({ role, password }))
+
+            // Show success toast
+            showToast(role === 'admin' ? "관리자 인증 완료" : "사장님 인증 완료", "success")
 
             // Redirect
             if (role === 'admin') {
@@ -51,8 +56,9 @@ export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
             }
 
             onClose()
-        } catch (err: any) {
-            setError(err.message || "오류가 발생했습니다.")
+        } catch (err) {
+            const errorMsg = err instanceof Error ? err.message : "오류가 발생했습니다."
+            showToast(errorMsg, "error")
         } finally {
             setIsLoading(false)
         }
@@ -68,7 +74,7 @@ export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
                     <p className="text-sm text-slate-500">
                         {role === 'admin'
                             ? '관리자 비밀번호를 입력해주세요.'
-                            : '매장 코드를 입력해주세요 (초기 비번: user)'}
+                            : '매장 코드를 입력해주세요'}
                     </p>
                 </div>
                 <div className="space-y-2">
@@ -84,7 +90,6 @@ export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
                         className="h-12 text-lg"
                     />
                 </div>
-                {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
                 <div className="flex justify-end gap-2 pt-2">
                     <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading} className="text-base px-6 h-12">
                         취소

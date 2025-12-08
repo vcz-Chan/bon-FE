@@ -8,9 +8,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Category } from "@/types"
 import { PreviewChatModal } from "@/components/admin/preview-chat-modal"
+import { useToast } from "@/components/ui/toast"
 
 export default function AdminDashboard() {
     const router = useRouter()
+    const { showToast } = useToast()
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
     const [previewOpen, setPreviewOpen] = useState(false)
@@ -24,7 +26,7 @@ export default function AdminDashboard() {
         }
         const { role } = JSON.parse(auth)
         if (role !== 'admin') {
-            alert("관리자만 접근 가능합니다.")
+            showToast("관리자만 접근 가능합니다.", "error")
             router.replace("/")
             return
         }

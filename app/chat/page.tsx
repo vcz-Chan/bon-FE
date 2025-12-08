@@ -7,9 +7,11 @@ import { Send, Bot, User, FileText, ChevronRight, ChevronLeft } from "lucide-rea
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Message } from "@/types"
+import { useToast } from "@/components/ui/toast"
 
 export default function ChatPage() {
     const router = useRouter()
+    const { showToast } = useToast()
     const [input, setInput] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
     const [loading, setLoading] = useState(false)
@@ -24,7 +26,7 @@ export default function ChatPage() {
         }
         const { role } = JSON.parse(auth)
         if (role !== 'user') {
-            alert("접근 권한이 없습니다.")
+            showToast("접근 권한이 없습니다.", "error")
             router.replace("/")
         }
 
