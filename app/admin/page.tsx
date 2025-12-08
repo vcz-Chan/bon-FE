@@ -89,7 +89,7 @@ export default function AdminDashboard() {
                                     </p>
                                     <div className="flex items-center text-sm text-slate-600">
                                         <FileText className="w-4 h-4 mr-1" />
-                                        <span>문서 {cat.doc_count || 0}개</span>
+                                        <span>문서 {cat.article_count}개</span>
                                         <ChevronRight className="w-4 h-4 ml-auto text-slate-400 group-hover:text-slate-900" />
                                     </div>
                                 </Card>

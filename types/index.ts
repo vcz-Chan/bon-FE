@@ -1,13 +1,13 @@
 export type UserRole = 'admin' | 'user';
 
 export interface Category {
-    id: number;
+    id: string;
     code: string;
     name: string;
-    description?: string;
+    description: string | null;
     sort_order: number;
     is_active: boolean;
-    doc_count?: number; // UI convenience
+    article_count: string;
 }
 
 export interface Article {

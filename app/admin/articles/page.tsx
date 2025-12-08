@@ -155,7 +155,7 @@ function ArticleListContent() {
                                     ) : filteredArticles.length === 0 ? (
                                         <tr><td colSpan={5} className="px-4 py-8 md:px-6 text-center text-slate-500">문서가 없습니다.</td></tr>
                                     ) : filteredArticles.map((article) => {
-                                        const catParams = categories.find(c => c.id === article.category_id);
+                                        const catParams = categories.find(c => c.id === String(article.category_id));
                                         return (
                                             <tr key={article.id} className="hover:bg-slate-50/50 transition-colors">
                                                 <td className="px-4 py-3 md:px-6 md:py-4 text-slate-500">#{article.id}</td>

@@ -83,7 +83,7 @@ export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
                     </label>
                     <Input
                         type="password"
-                        placeholder={role === 'admin' ? "관리자 비밀번호를 입력하세요" : "매장 코드를 입력하세요 (초기 비번: user)"}
+                        placeholder={role === 'admin' ? "관리자 비밀번호를 입력하세요" : "매장 코드를 입력하세요"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={isLoading}

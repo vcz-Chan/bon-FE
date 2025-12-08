@@ -167,7 +167,7 @@ export default function ArticleEditPage({ params }: { params: Promise<{ id: stri
                                 <label className="text-sm font-medium text-slate-700">카테고리</label>
                                 <select
                                     className="w-full h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-bon-green-start outline-none"
-                                    value={formData.category_id}
+                                    value={String(formData.category_id)}
                                     onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
                                 >
                                     {categories.map(c => (
