@@ -38,7 +38,7 @@ export function PasswordModal({ isOpen, onClose, role }: PasswordModalProps) {
             if (!res.ok || !data.ok) {
                 const errorMsg = data.message || "인증에 실패했습니다."
                 showToast(errorMsg, "error")
-                throw new Error(errorMsg)
+                return
             }
 
             // Save to sessionStorage
