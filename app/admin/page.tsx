@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Folder, FileText, ChevronRight } from "lucide-react"
+import { Folder, FileText, ChevronRight, ChevronLeft } from "lucide-react"
 
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Category } from "@/types"
 import { PreviewChatModal } from "@/components/admin/preview-chat-modal"
 
@@ -52,11 +53,11 @@ export default function AdminDashboard() {
         <div className="min-h-screen p-4 md:p-8 flex justify-center">
             <div className="w-full max-w-6xl bg-white/90 backdrop-blur-sm rounded-xl shadow-xl min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col">
                 <header className="bg-white/50 border-b border-slate-200 px-4 py-4 md:px-6 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
-                    <h1 className="text-lg md:text-xl font-bold text-slate-900">관리자 대시보드</h1>
-                    <div className="flex gap-2">
-                        <button className="text-xs md:text-sm text-slate-500 hover:text-slate-900 px-2 py-1 md:px-3">
-                            로그아웃
-                        </button>
+                    <div className="flex items-center gap-3">
+                        <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
+                            <ChevronLeft className="w-5 h-5 text-slate-500" />
+                        </Button>
+                        <h1 className="text-lg md:text-xl font-bold text-slate-900">관리자 대시보드</h1>
                     </div>
                 </header>
 

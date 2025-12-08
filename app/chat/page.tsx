@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Send, Bot, User, FileText, ChevronRight } from "lucide-react"
+import { Send, Bot, User, FileText, ChevronRight, ChevronLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -183,7 +183,17 @@ export default function ChatPage() {
             <div className="w-full h-[100dvh] md:h-[80vh] md:max-w-3xl bg-white/90 md:bg-white/90 md:backdrop-blur-sm md:rounded-xl md:shadow-2xl overflow-hidden flex flex-col relative">
                 {/* Header */}
                 <header className="flex-none flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur border-b border-slate-200 z-10">
-                    <h2 className="text-xl md:text-2xl font-bold text-slate-900">운영 매뉴얼 챗봇</h2>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push('/')}
+                            className="shrink-0"
+                        >
+                            <ChevronLeft className="w-5 h-5 text-slate-500" />
+                        </Button>
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-900">운영 매뉴얼 챗봇</h2>
+                    </div>
 
                     <span className="text-sm px-3 py-1 rounded-full border border-slate-200 text-slate-600 font-bold bg-slate-50">
                         사장님 모드
