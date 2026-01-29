@@ -2,31 +2,17 @@ import { NextResponse } from 'next/server';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-export async function GET(request: Request) {
+export async function PUT(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     try {
-        const adminPassword = request.headers.get("X-Admin-Password") || "";
-
-        const response = await fetch(`${API_URL}/api/admin/categories`, {
-            headers: {
-                'X-Admin-Password': adminPassword
-            }
-        });
-
-        const data = await response.json();
-        return NextResponse.json(data, { status: response.status });
-    } catch (error) {
-        console.error("Categories proxy error:", error);
-        return NextResponse.json({ ok: false, message: "Internal Server Error" }, { status: 500 });
-    }
-}
-
-export async function POST(request: Request) {
-    try {
+        const { id } = await params;
         const body = await request.json();
         const adminPassword = request.headers.get("X-Admin-Password") || "";
 
-        const response = await fetch(`${API_URL}/api/admin/categories`, {
-            method: 'POST',
+        const response = await fetch(`${API_URL}/api/admin/categories/${id}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Admin-Password': adminPassword
@@ -37,7 +23,30 @@ export async function POST(request: Request) {
         const data = await response.json();
         return NextResponse.json(data, { status: response.status });
     } catch (error) {
-        console.error("Categories create proxy error:", error);
+        console.error("Category update proxy error:", error);
+        return NextResponse.json({ ok: false, message: "Internal Server Error" }, { status: 500 });
+    }
+}
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const adminPassword = request.headers.get("X-Admin-Password") || "";
+
+        const response = await fetch(`${API_URL}/api/admin/categories/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Admin-Password': adminPassword
+            }
+        });
+
+        const data = await response.json();
+        return NextResponse.json(data, { status: response.status });
+    } catch (error) {
+        console.error("Category delete proxy error:", error);
         return NextResponse.json({ ok: false, message: "Internal Server Error" }, { status: 500 });
     }
 }
