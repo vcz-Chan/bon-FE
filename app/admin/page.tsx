@@ -65,7 +65,16 @@ export default function AdminDashboard() {
 
                 <main className="flex-1 px-4 py-6 md:px-6 md:py-8">
                     <section className="mb-8">
-                        <h2 className="text-lg font-semibold text-slate-800 mb-4">카테고리 관리</h2>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-slate-800">카테고리 관리</h2>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => router.push('/admin/categories')}
+                            >
+                                카테고리 편집
+                            </Button>
+                        </div>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {loading ? (
                                 <p className="text-slate-500">로딩 중...</p>
